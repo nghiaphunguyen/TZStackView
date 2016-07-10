@@ -193,6 +193,7 @@ public class TZStackView: UIView {
             
             if isHidden(arrangedSubview) {
                 let hiddenConstraint: NSLayoutConstraint
+                let allSubviewConstraint: NSLayoutConstraint?
                 switch axis {
                 case .Horizontal:
                     hiddenConstraint = constraint(item: arrangedSubview, attribute: .Width, toItem: nil, attribute: .NotAnAttribute, constant: 0)
@@ -200,7 +201,14 @@ public class TZStackView: UIView {
                     hiddenConstraint = constraint(item: arrangedSubview, attribute: .Height, toItem: nil, attribute: .NotAnAttribute, constant: 0)
                 }
                 subviewConstraints.append(hiddenConstraint)
+                arrangedSubview.nk_templeConstraints = arrangedSubview.constraints
+                arrangedSubview.removeConstraints(arrangedSubview.constraints)
                 arrangedSubview.addConstraint(hiddenConstraint)
+            } else {
+                if let templeConstraints = arrangedSubview.nk_templeConstraints {
+                    arrangedSubview.addConstraints(templeConstraints)
+                    arrangedSubview.nk_templeConstraints = nil
+                }
             }
         }
         
@@ -604,5 +612,18 @@ public class TZStackView: UIView {
             return true
         }
         return animatingToHiddenViews.indexOf(view) != nil
+    }
+}
+
+private var kUIViewTempConstraintsKey : UInt8 = 0
+private extension UIView {
+    var nk_templeConstraints: [NSLayoutConstraint]? {
+        get {
+            return objc_getAssociatedObject(self, &kUIViewTempConstraintsKey) as? [NSLayoutConstraint]
+        }
+        
+        set {
+            objc_setAssociatedObject(self, &kUIViewTempConstraintsKey, newValue, objc_AssociationPolicy.OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
     }
 }
