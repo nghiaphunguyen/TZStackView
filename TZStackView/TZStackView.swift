@@ -193,7 +193,6 @@ public class TZStackView: UIView {
             
             if isHidden(arrangedSubview) {
                 let hiddenConstraint: NSLayoutConstraint
-                let allSubviewConstraint: NSLayoutConstraint?
                 switch axis {
                 case .Horizontal:
                     hiddenConstraint = constraint(item: arrangedSubview, attribute: .Width, toItem: nil, attribute: .NotAnAttribute, constant: 0)
